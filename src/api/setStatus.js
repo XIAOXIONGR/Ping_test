@@ -19,21 +19,25 @@ async function setStatus(req, res) {
       return res.status(404).json({ error: `IP ${ip} 不存在` });
     }
 
-    await new Promise((resolve, reject) => {
+    const result = await new Promise((resolve, reject) => {
       db.run(
         `UPDATE ip_list SET status = ? WHERE ip = ?`,
         [status, ip],
-        (err) => {
+        function (err) {
           if (err) {
             console.error(`更新 ${ip} 状态失败:`, err);
             reject(err);
           } else {
-            console.log(`更新 ${ip} 状态为 ${status}`);
-            resolve();
+            console.log(`更新 ${ip} 状态为 ${status}, 变化行数: ${this.changes}`);
+            resolve(this.changes);
           }
         }
       );
     });
+
+    if (result === 0) {
+      return res.status(404).json({ error: `IP ${ip} 未更新` });
+    }
 
     await new Promise((resolve, reject) => {
       db.run(
@@ -52,11 +56,11 @@ async function setStatus(req, res) {
     });
 
     await loadIpList();
-    await pingIp();
+    pingIp().catch(err => console.error('pingIp 错误:', err));
     res.json({ message: '状态更新成功', ip, status });
   } catch (error) {
     console.error(`设置 ${ip} 状态失败:`, error);
-    res.status(500).json({ error: '设置状态失败' });
+    res.status(500).json({ error: error.message || '设置状态失败' });
   }
 }
 

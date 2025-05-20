@@ -8,10 +8,11 @@ const setStatus = require('./api/setStatus');
 const updatePosition = require('./api/updatePosition');
 const updateSize = require('./api/updateSize');
 
+const path = require('path');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // 初始化 IP 列表和定时 ping
 loadIpList().then(() => {

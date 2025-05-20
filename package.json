@@ -1,18 +1,75 @@
 {
-  "name": "ip-status-monitor",
+  "name": "ping_status_monitor",
+  "productName": "ping_status_monitor",
   "version": "1.0.0",
-  "main": "src/server.js",
+  "description": "IP status monitoring application",
+  "main": "src/main.js",
+  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js"
+    "start": "set NODE_ENV=development && electron . electron . --disable-gpu --no-sandbox",
+    "package": "electron-packager . ip-status-monitor --platform=win32 --arch=x64 --out=dist --overwrite --extra-resource=ping.db",
+    "make": "electron-forge make --platform=win32 --arch=x64",
+    "publish": "electron-forge publish",
+    "lint": "eslint src --color",
+    "server": "node src/server.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "xiaoxiong",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "asar": false,
+        "prune": true,
+        "out": "out",
+        "extraResources": [
+          {
+            "from": "ping.db",
+            "to": "ping.db"
+          }
+        ],
+        "files": [
+          "src/**/*",
+          "public/**/*",
+          "!node_modules/**/*.{md,doc,docs,test,tests}"
+        ],
+        "compression": "normal"
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "ping_status_monitor",
+            "setupExe": "PingStatusMonitorSetup.exe",
+            "noMsi": true
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "win32"
+          ]
+        }
+      ]
+    }
+  },
   "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
     "express": "^5.1.0",
     "ping": "^0.4.4",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "electron": "^36.2.0",
+    "electron-forge": "^5.2.4",
+    "electron-packager": "^17.1.2",
+    "electron-rebuild": "^3.2.9",
+    "eslint": "^8.57.0"
   }
 }

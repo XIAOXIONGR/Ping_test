@@ -34,7 +34,7 @@ async function pingIp() {
 
       if (item.status === 0 || item.status === 1) {
         console.log(`尝试 ping IP ${item.ip} (当前状态: ${item.status})`);
-        const res = await ping.promise.probe(item.ip, { timeout: 10 });
+        const res = await ping.promise.probe(item.ip, { timeout: 2 });
         status = res.alive ? 1 : 0;
         latency = res.alive ? parseFloat(res.avg) : null;
         console.log(`Ping 结果: IP ${item.ip}, alive: ${res.alive}, 延迟: ${latency || '-'}ms`);
@@ -80,6 +80,7 @@ async function pingIp() {
     await loadIpList();
   } catch (error) {
     console.error('Ping 错误:', error);
+    throw error;
   }
 }
 
