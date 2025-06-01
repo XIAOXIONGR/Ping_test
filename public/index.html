@@ -47,7 +47,7 @@
             top: 50%;
             left: 2px;
             margin-top: -20px;
-            background-color: #0075CF;
+            background-color: #5289ae;
             color: white;
             border: none;
             padding: 5px 2px;
@@ -166,7 +166,7 @@
             height: 500px;
             background-color: rgba(128, 128, 128, 0.3);
             border: 2px dashed #888;
-            border-radius: 10px;
+            border-radius: 5px;
             box-sizing: border-box;
             overflow: hidden;
             background-size: cover;
@@ -179,7 +179,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 40px;
+            height: 60px;
             background-color: #000;
             display: flex;
             align-items: center;
@@ -189,10 +189,22 @@
             color: white;
         }
 
+        camara .title-icon {
+            background-image: url("camara.png");
+            background-repeat: no-repeat;
+            /* background-color: #cd1111; */
+            /* font-size: larger; */
+            width: 20px;
+            height: 20px;
+            margin-left: 20px;
+            flex: 0 0 auto;
+        }
+
         .title-text {
             flex: 0 0 auto;
-            font-size: 16px;
-            margin-right: 20px;
+            font-size: 25px;
+            /* margin-right: 20px; */
+            margin-left: 20px;
         }
 
         .status-indicators {
@@ -206,12 +218,12 @@
         .indicator {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
 
         .indicator-color {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 25px;
             border-radius: 4px;
         }
 
@@ -228,22 +240,23 @@
         }
 
         .indicator-text {
-            font-size: 14px;
+            font-size: 18px;
             color: white;
         }
 
         .count-idle {
-            font-size: 16px;
+            font-size: 25px;
             color: #15f62f;
         }
 
         .count-in-use {
-            font-size: 16px;
-            color: #2196F3;
+            font-size: 25px;
+            color: #49d3f9;
+
         }
 
         .count-repairing {
-            font-size: 16px;
+            font-size: 25px;
             color: #F44336;
         }
 
@@ -266,16 +279,16 @@
             /* 图片适配块大小，保持比例 */
             background-position: center;
             /* 图片居中显示 */
-            width: 150px;
-            height: 150px;
+            width: 80px;
+            height: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             border-radius: 4px;
-            border: 1px solid #000;
+            border: 1px solid #adadad;
             /* 调试边框，可移除 */
-            color: white;
+            color: rgb(8, 8, 8);
             text-align: center;
             padding: 10px;
             box-sizing: border-box;
@@ -329,6 +342,7 @@
     <div class="container">
         <div class="status-container" id="statusContainer">
             <div class="title-bar" id="titleBar">
+                <img class="title-icon" id="titleIcon" src="camaracamara.png">
                 <div class="title-text" id="titleText">默认标题</div>
                 <div class="status-indicators">
                     <div class="indicator">
@@ -412,24 +426,24 @@
         }
 
         async function toggleAddIpDrawer() {
-    const drawer = document.getElementById('addIpDrawer');
-    const isOpen = drawer.classList.contains('open');
-    drawer.classList.toggle('open');
-    if (!isOpen) {
-        // 等待动画完成（0.3s）后再聚焦
-        setTimeout(() => {
-            const ipInput = document.getElementById('ipInput');
-            ipInput.disabled = false;
-            ipInput.readOnly = false;
-            ipInput.focus();
-            // 确保 Electron 窗口获得焦点
-            if (window.require) {
-                const { ipcRenderer } = require('electron');
-                ipcRenderer.send('focus-window');
+            const drawer = document.getElementById('addIpDrawer');
+            const isOpen = drawer.classList.contains('open');
+            drawer.classList.toggle('open');
+            if (!isOpen) {
+                // 等待动画完成（0.3s）后再聚焦
+                setTimeout(() => {
+                    const ipInput = document.getElementById('ipInput');
+                    ipInput.disabled = false;
+                    ipInput.readOnly = false;
+                    ipInput.focus();
+                    // 确保 Electron 窗口获得焦点
+                    if (window.require) {
+                        const { ipcRenderer } = require('electron');
+                        ipcRenderer.send('focus-window');
+                    }
+                }, 300); // 匹配 CSS transition: left 0.3s ease
             }
-        }, 300); // 匹配 CSS transition: left 0.3s ease
-    }
-}
+        }
 
         async function addIp() {
             const ip = document.getElementById('ipInput').value.trim();
@@ -798,6 +812,7 @@
                 const statusContainer = document.getElementById('statusContainer');
                 statusContainer.innerHTML = `
                 <div class="title-bar" id="titleBar">
+                    <img class="title-icon" id="titleIcon" src="camara.png">
                     <div class="title-text" id="titleText">默认标题</div>
                     <div class="status-indicators">
                         <div class="indicator">
@@ -844,6 +859,7 @@
                 const statusContainer = document.getElementById('statusContainer');
                 statusContainer.innerHTML = `
                 <div class="title-bar" id="titleBar">
+                    <img class="title-icon" id="titleIcon" src="camara.png">
                     <div class="title-text" id="titleText">默认标题</div>
                     <div class="status-indicators">
                         <div class="indicator">
