@@ -3,10 +3,18 @@ const db = require('./db/database');
 const { loadIpList, pingIp, getIpList } = require('./utils/ping');
 const status = require('./api/status');
 const addIp = require('./api/addIp');
+const batchAddIp = require('./api/batchAddIp');
 const deleteIp = require('./api/deleteIp');
+const batchDeleteIp = require('./api/batchDeleteIp');
 const setStatus = require('./api/setStatus');
 const updatePosition = require('./api/updatePosition');
 const updateSize = require('./api/updateSize');
+const { listAnnouncePres } = require('./api/listAnnouncePres');
+const { listAnnouncePrePool } = require('./api/listAnnouncePrePool');
+const { listAnnouncePrefix } = require('./api/listAnnouncePrefix');
+const { listAnnouncePrefixPool } = require('./api/listAnnouncePrefixPool');
+const { listAnnounceSuffix } = require('./api/listAnnounceSuffix');
+const { listAnnounceSuffixPool } = require('./api/listAnnounceSuffixPool');
 
 const path = require('path');
 const app = express();
@@ -58,10 +66,18 @@ app.get('/', (req, res) => {
 // API 路由
 app.get('/status', status);
 app.post('/add-ip', addIp);
+app.post('/batch-add-ip', batchAddIp);
 app.post('/delete-ip', deleteIp);
+app.post('/batch-delete-ip', batchDeleteIp);
 app.post('/set-status', setStatus);
 app.post('/update-position', updatePosition);
 app.post('/update-size', updateSize);
+app.get('/announce-pres', listAnnouncePres);
+app.get('/announce-pre-pool', listAnnouncePrePool);
+app.get('/announce-prefix', listAnnouncePrefix);
+app.get('/announce-prefix-pool', listAnnouncePrefixPool);
+app.get('/announce-suffix', listAnnounceSuffix);
+app.get('/announce-suffix-pool', listAnnounceSuffixPool);
 
 app.listen(3000, () => {
   console.log('状态监控页面运行在 http://localhost:3000');

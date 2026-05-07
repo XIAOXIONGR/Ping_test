@@ -25,10 +25,25 @@ db.serialize(() => {
     height REAL DEFAULT 150
   )`);
 
-  db.run(`INSERT OR IGNORE INTO ip_list (ip, number, status, position_x, position_y, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)`, 
-    ['192.168.137.1', 'PC01', 0, 0, 40, 150, 150]);
-  db.run(`INSERT OR IGNORE INTO ping_records (ip, status, latency, timestamp) VALUES (?, ?, ?, ?)`, 
-    ['192.168.137.1', 0, null, new Date().toISOString()]);
+  // 仅当库中尚无任何 IP 时插入示例行，避免用户删除 192.168.137.1 后每次重启又被加回
+  db.get(`SELECT COUNT(*) AS c FROM ip_list`, (err, row) => {
+    if (err) {
+      console.error('检查 ip_list 失败:', err);
+      return;
+    }
+    if (row && row.c === 0) {
+      db.run(
+        `INSERT OR IGNORE INTO ip_list (ip, number, status, position_x, position_y, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        ['192.168.137.1', 'PC01', 0, 0, 40, 150, 150]
+      );
+      db.run(`INSERT OR IGNORE INTO ping_records (ip, status, latency, timestamp) VALUES (?, ?, ?, ?)`, [
+        '192.168.137.1',
+        0,
+        null,
+        new Date().toISOString(),
+      ]);
+    }
+  });
 });
 
 module.exports = db;

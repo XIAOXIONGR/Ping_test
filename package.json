@@ -9,6 +9,7 @@
     "start": "set NODE_ENV=development && electron . electron . --disable-gpu --no-sandbox",
     "package": "electron-packager . ip-status-monitor --platform=win32 --arch=x64 --out=dist --overwrite --extra-resource=ping.db",
     "make": "electron-forge make --platform=win32 --arch=x64",
+    "make:cn": "set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/&& electron-forge make --platform=win32 --arch=x64",
     "publish": "electron-forge publish",
     "lint": "eslint src --color",
     "server": "node src/server.js"

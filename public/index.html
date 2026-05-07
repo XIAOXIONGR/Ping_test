@@ -42,6 +42,90 @@
             pointer-events: auto;
         }
 
+        /* 收起时侧栏移出视口但仍占命中测试区域，可能挡住左侧交互 */
+        .add-ip-drawer:not(.open) {
+            pointer-events: none;
+        }
+
+        .app-toast {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-12px);
+            z-index: 10000;
+            max-width: 90vw;
+            padding: 10px 18px;
+            background: #333;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 14px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .app-toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .app-toast.error {
+            background: #b71c1c;
+        }
+
+        .app-confirm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10050;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+
+        .app-confirm-overlay.is-open {
+            display: flex;
+        }
+
+        .app-confirm-box {
+            background: #fff;
+            padding: 20px 22px;
+            border-radius: 8px;
+            max-width: min(420px, 92vw);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .app-confirm-box p {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.45;
+            color: #222;
+        }
+
+        .app-confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        .app-confirm-actions button {
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            background: #f5f5f5;
+        }
+
+        .app-confirm-actions button.primary {
+            background: #0075CF;
+            color: #fff;
+            border-color: #0075CF;
+        }
+
         .add-ip-toggle {
             position: fixed;
             top: 50%;
@@ -78,6 +162,11 @@
             opacity: 1;
             cursor: text;
 
+        }
+
+        .form-container input[type="number"]::placeholder {
+            color: #555;
+            opacity: 1;
         }
 
         .form-container select {
@@ -143,6 +232,31 @@
 
         #ipList th {
             background-color: #f5f5f5;
+        }
+
+        #ipList .col-check {
+            width: 40px;
+            text-align: center;
+        }
+
+        .ip-list-toolbar {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ip-batch-delete-btn {
+            padding: 6px 12px;
+            background-color: #E53935;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .ip-batch-delete-btn:hover {
+            background-color: #C62828;
         }
 
         .ip-delete-btn {
@@ -335,10 +449,124 @@
             left: 10px;
             z-index: 5;
         }
+
+        /* 使用中 → 空闲：下机记录，右上角瀑布流小块 */
+        .idle-down-log-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: min(300px, calc(100vw - 24px));
+            max-height: min(72vh, 520px);
+            z-index: 9500;
+            pointer-events: auto;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.62);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .idle-down-log-header {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: linear-gradient(135deg, rgba(55, 71, 79, 0.72), rgba(69, 90, 100, 0.68));
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .idle-down-log-header button {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .idle-down-log-header button:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .idle-down-log-masonry {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 8px;
+            column-count: 2;
+            column-gap: 8px;
+        }
+
+        .idle-down-log-card {
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 8px;
+            padding: 8px 8px 6px;
+            background: rgba(236, 239, 241, 0.78);
+            border-radius: 8px;
+            border-left: 3px solid rgba(84, 110, 122, 0.85);
+            font-size: 12px;
+            line-height: 1.45;
+            color: #263238;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .idle-down-log-read-btn {
+            display: block;
+            width: 100%;
+            margin-top: 6px;
+            padding: 4px 6px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(84, 110, 122, 0.22);
+            color: #37474f;
+            cursor: pointer;
+        }
+
+        .idle-down-log-read-btn:hover {
+            background: rgba(84, 110, 122, 0.35);
+        }
+
+        .idle-down-log-card .num {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1b5e20;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .idle-down-log-card .msg {
+            color: #37474f;
+        }
+
+        .idle-down-log-card .time {
+            margin-top: 4px;
+            font-size: 10px;
+            color: #78909c;
+        }
     </style>
 </head>
 
 <body>
+    <div id="idleDownLogPanel" class="idle-down-log-panel" aria-label="下机记录">
+        <div class="idle-down-log-header">
+            <span>下机记录</span>
+            <button type="button" id="idleDownLogClear" onclick="clearIdleDownLog()">清空</button>
+        </div>
+        <div id="idleDownLogMasonry" class="idle-down-log-masonry"></div>
+    </div>
     <div class="container">
         <div class="status-container" id="statusContainer">
             <div class="title-bar" id="titleBar">
@@ -373,13 +601,26 @@
             <h2>添加 IP</h2>
             <input type="text" id="ipInput" placeholder="IP 地址 (如 192.168.137.1)">
             <input type="text" id="numberInput" placeholder="编号 (如 PC01)">
-            <button onclick="addIp()">添加 IP</button>
+            <button type="button" id="btnAddIp" onclick="addIp()">添加 IP</button>
+        </div>
+        <div class="form-container">
+            <h2>批量添加 IP</h2>
+            <p style="margin:0 0 8px 0;font-size:12px;color:#666;">按 IPv4 连续段添加（含起始与结束地址）。已存在的 IP 会跳过。</p>
+            <input type="text" id="batchStartIp" placeholder="起始 IP（如 192.168.1.10）">
+            <input type="text" id="batchEndIp" placeholder="结束 IP（如 192.168.1.20）">
+            <input type="text" id="batchNumberPrefix" placeholder="编号前缀（如 PC）">
+            <input type="number" id="batchNumberStart" placeholder="编号起始数字" min="0" step="1">
+            <input type="number" id="batchNumberDigits" placeholder="编号数字位数"  min="0" max="6" title="0 表示不补零">
+            <button type="button" id="btnBatchAddIp" onclick="batchAddIp()">批量添加</button>
         </div>
         <div class="form-container">
             <h2>已添加的 IP 列表</h2>
             <table id="ipList">
                 <thead>
                     <tr>
+                        <th class="col-check">
+                            <input type="checkbox" id="ipListSelectAll" title="全选">
+                        </th>
                         <th>IP 地址</th>
                         <th>编号</th>
                         <th>操作</th>
@@ -387,6 +628,9 @@
                 </thead>
                 <tbody id="ipListBody"></tbody>
             </table>
+            <div class="ip-list-toolbar">
+                <button type="button" class="ip-batch-delete-btn" id="btnBatchDeleteIp" onclick="batchDeleteSelectedIps()">删除所选</button>
+            </div>
         </div>
         <div class="form-container">
             <h2>设置背景图</h2>
@@ -398,19 +642,803 @@
         </div>
         <div class="form-container">
             <h2>设置 IP 状态</h2>
-            <input type="text" id="setStatusIpInput" placeholder="输入 IP">
+            <p style="margin:0 0 8px 0;font-size:12px;color:#666;">可输入 IP 地址或机器编号（与列表中一致）。若多条记录共用同一编号，会一并更新。</p>
+            <input type="text" id="setStatusIpInput" placeholder="IP 或编号（如 192.168.1.10 或 PC01）" autocomplete="off">
             <select id="statusSelect">
                 <option value="0">空闲中</option>
                 <option value="1">使用中</option>
                 <option value="2">维修中</option>
             </select>
-            <button onclick="setIpStatus()">设置状态</button>
+            <button type="button" id="btnSetIpStatus" onclick="setIpStatus()">设置状态</button>
+        </div>
+        <div class="form-container">
+            <h2>语音播报</h2>
+            <p style="margin:0 0 8px 0;font-size:12px;color:#666;">预录顺序：<strong>片头</strong> → <strong>prefix</strong> → <strong>TTS 编号</strong>（或 numbers/）→ <strong>suffix</strong>。每段均可选：<strong>根目录</strong> <code style="font-size:11px;">announce/</code> 下 <code style="font-size:11px;">pre*.mp3</code>、<code style="font-size:11px;">prefix*.mp3</code>、<code style="font-size:11px;">suffix*.mp3</code>；或对应子文件夹 <code style="font-size:11px;">pre_pool</code>、<code style="font-size:11px;">prefix_pool</code>、<code style="font-size:11px;">suffix_pool</code> 内任意 <code style="font-size:11px;">.mp3</code>。</p>
+            <label for="announcePreFileSelect" style="font-size:13px;color:#444;">片头（pre* / pre_pool）</label>
+            <select id="announcePreFileSelect">
+                <option value="root:pre.mp3">pre.mp3</option>
+            </select>
+            <label for="announcePrefixFileSelect" style="font-size:13px;color:#444;display:block;margin-top:10px;">Prefix（prefix* / prefix_pool）</label>
+            <select id="announcePrefixFileSelect">
+                <option value="root:prefix.mp3">prefix.mp3</option>
+            </select>
+            <label for="announceSuffixFileSelect" style="font-size:13px;color:#444;display:block;margin-top:10px;">Suffix（suffix* / suffix_pool）</label>
+            <select id="announceSuffixFileSelect">
+                <option value="root:suffix.mp3">suffix.mp3</option>
+            </select>
+            <div style="margin-top:8px">
+                <button type="button" id="btnRefreshAnnouncePres" onclick="loadAnnounceAudioSelects(true)">刷新预录音轨列表</button>
+            </div>
+            <label style="display:flex;flex-direction:row;align-items:center;flex-wrap:nowrap;gap:8px;margin:10px 0;font-size:13px;color:#444;cursor:pointer;user-select:none;">
+                <input type="checkbox" id="announceMiddleTts" checked style="flex-shrink:0;margin:0;width:auto;vertical-align:middle;">
+                <span style="white-space:nowrap;line-height:1.35;">编号用系统 TTS 朗读</span>
+            </label>
+            <label for="announceModeSelect" style="font-size:13px;color:#444;">播报方式</label>
+            <select id="announceModeSelect">
+                <option value="tts">本机 TTS（网页朗读）</option>
+                <option value="audio">预录音频（仅拼接文件）</option>
+                <option value="audio_tts" selected>预录优先，缺文件时回退 TTS</option>
+            </select>
+            <label for="announceVoiceSelect" style="font-size:13px;color:#444;display:block;margin-top:10px;">TTS 音色（读编号 / 整段回退时用）</label>
+            <select id="announceVoiceSelect">
+                <option value="">系统默认</option>
+            </select>
+            <label for="announceTtsVolumeSlider" style="font-size:13px;color:#444;display:block;margin-top:10px;">TTS 音量 <span id="announceTtsVolumePct">100%</span></label>
+            <input type="range" id="announceTtsVolumeSlider" min="0" max="100" value="100" step="5" style="width:calc(100% - 15px);margin-bottom:4px;">
+            <!-- <p style="margin:0;font-size:11px;color:#666;">网页 TTS 最大为 100%；若仍偏小请提高 Windows 系统音量或扬声器。</p> -->
+            <div class="button-group" style="margin-top:8px">
+                <button type="button" id="btnRefreshVoices" onclick="refreshAnnounceVoices()">刷新语音列表</button>
+                <button type="button" id="btnTestAnnounce" onclick="testAnnounceVoice()">试听</button>
+            </div>
         </div>
     </div>
     <button class="add-ip-toggle" id="addIpToggle" onclick="toggleAddIpDrawer()">></button>
 
+    <div id="appConfirmOverlay" class="app-confirm-overlay" aria-hidden="true">
+        <div class="app-confirm-box" role="alertdialog" aria-labelledby="appConfirmMessage">
+            <p id="appConfirmMessage"></p>
+            <div class="app-confirm-actions">
+                <button type="button" id="appConfirmCancel">取消</button>
+                <button type="button" class="primary" id="appConfirmOk">确定</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let serverPort = null;
+
+        /** 上一次 /status 成功返回时各 IP 的状态，用于检测「使用中 → 空闲」 */
+        let prevStatusByIp = Object.create(null);
+
+        const ANNOUNCE_VOICE_STORAGE_KEY = 'announceTtsVoiceURI';
+        /** 0～1，存 localStorage 字符串如 "1" 或 "0.85" */
+        const ANNOUNCE_TTS_VOLUME_KEY = 'announceTtsVolume';
+        const ANNOUNCE_MODE_STORAGE_KEY = 'announceMode';
+        const ANNOUNCE_MIDDLE_TTS_KEY = 'announceMiddleTts';
+        /** 旧版仅根目录文件名，迁移到 announcePreSelection */
+        const ANNOUNCE_PRE_FILE_KEY = 'announcePreFilename';
+        const ANNOUNCE_PRE_SELECTION_KEY = 'announcePreSelection';
+        const ANNOUNCE_PREFIX_SELECTION_KEY = 'announcePrefixSelection';
+        const ANNOUNCE_SUFFIX_SELECTION_KEY = 'announceSuffixSelection';
+
+        let announcePreRootList = [];
+        let announcePrePoolList = [];
+        let announcePrefixRootList = [];
+        let announcePrefixPoolList = [];
+        let announceSuffixRootList = [];
+        let announceSuffixPoolList = [];
+
+        function parsePreSelection(raw) {
+            if (!raw || typeof raw !== 'string') return null;
+            const m = raw.match(/^(root|pool):(.+)$/);
+            if (!m) return null;
+            return { kind: m[1], file: m[2] };
+        }
+
+        /** 当前片头：根目录 pre*.mp3 或 pre_pool 下某一文件 */
+        function getAnnouncePreSelection() {
+            let raw = localStorage.getItem(ANNOUNCE_PRE_SELECTION_KEY);
+            if (!raw) {
+                const legacy = localStorage.getItem(ANNOUNCE_PRE_FILE_KEY);
+                if (legacy) raw = `root:${legacy}`;
+            }
+            let sel = parsePreSelection(raw);
+            if (sel && sel.kind === 'root' && announcePreRootList.includes(sel.file)) return sel;
+            if (sel && sel.kind === 'pool' && announcePrePoolList.includes(sel.file)) return sel;
+            if (announcePreRootList.includes('pre.mp3')) return { kind: 'root', file: 'pre.mp3' };
+            if (announcePreRootList.length) return { kind: 'root', file: announcePreRootList[0] };
+            if (announcePrePoolList.length) return { kind: 'pool', file: announcePrePoolList[0] };
+            return { kind: 'root', file: 'pre.mp3' };
+        }
+
+        function getPrePlaybackUrl(baseUrl) {
+            const s = getAnnouncePreSelection();
+            if (s.kind === 'pool') {
+                return `${baseUrl}/pre_pool/${encodeURIComponent(s.file)}`;
+            }
+            return `${baseUrl}/${encodeURIComponent(s.file)}`;
+        }
+
+        function getPreSelectionLabel() {
+            const s = getAnnouncePreSelection();
+            return s.kind === 'pool' ? `pre_pool/${s.file}` : s.file;
+        }
+
+        function getAnnouncePrefixSelection() {
+            let raw = localStorage.getItem(ANNOUNCE_PREFIX_SELECTION_KEY);
+            let sel = parsePreSelection(raw);
+            if (sel && sel.kind === 'root' && announcePrefixRootList.includes(sel.file)) return sel;
+            if (sel && sel.kind === 'pool' && announcePrefixPoolList.includes(sel.file)) return sel;
+            if (announcePrefixRootList.includes('prefix.mp3')) return { kind: 'root', file: 'prefix.mp3' };
+            if (announcePrefixRootList.length) return { kind: 'root', file: announcePrefixRootList[0] };
+            if (announcePrefixPoolList.length) return { kind: 'pool', file: announcePrefixPoolList[0] };
+            return { kind: 'root', file: 'prefix.mp3' };
+        }
+
+        function getAnnounceSuffixSelection() {
+            let raw = localStorage.getItem(ANNOUNCE_SUFFIX_SELECTION_KEY);
+            let sel = parsePreSelection(raw);
+            if (sel && sel.kind === 'root' && announceSuffixRootList.includes(sel.file)) return sel;
+            if (sel && sel.kind === 'pool' && announceSuffixPoolList.includes(sel.file)) return sel;
+            if (announceSuffixRootList.includes('suffix.mp3')) return { kind: 'root', file: 'suffix.mp3' };
+            if (announceSuffixRootList.length) return { kind: 'root', file: announceSuffixRootList[0] };
+            if (announceSuffixPoolList.length) return { kind: 'pool', file: announceSuffixPoolList[0] };
+            return { kind: 'root', file: 'suffix.mp3' };
+        }
+
+        function getPrefixPlaybackUrl(baseUrl) {
+            const s = getAnnouncePrefixSelection();
+            if (s.kind === 'pool') {
+                return `${baseUrl}/prefix_pool/${encodeURIComponent(s.file)}`;
+            }
+            return `${baseUrl}/${encodeURIComponent(s.file)}`;
+        }
+
+        function getSuffixPlaybackUrl(baseUrl) {
+            const s = getAnnounceSuffixSelection();
+            if (s.kind === 'pool') {
+                return `${baseUrl}/suffix_pool/${encodeURIComponent(s.file)}`;
+            }
+            return `${baseUrl}/${encodeURIComponent(s.file)}`;
+        }
+
+        function getPrefixSelectionLabel() {
+            const s = getAnnouncePrefixSelection();
+            return s.kind === 'pool' ? `prefix_pool/${s.file}` : s.file;
+        }
+
+        function getSuffixSelectionLabel() {
+            const s = getAnnounceSuffixSelection();
+            return s.kind === 'pool' ? `suffix_pool/${s.file}` : s.file;
+        }
+
+        /**
+         * 填充「根目录 + pool」下拉；storageKey 存 root:file 或 pool:file
+         */
+        function fillAffixSelect(selectId, storageKey, rootFiles, poolFiles, rootOgLabel, poolOgLabel, defaultFile, extraCandidates) {
+            const sel = document.getElementById(selectId);
+            if (!sel) return;
+            sel.innerHTML = '';
+            function addOptgroup(label, options, valuePrefix) {
+                if (!options.length) return;
+                const og = document.createElement('optgroup');
+                og.label = label;
+                options.forEach((f) => {
+                    const o = document.createElement('option');
+                    o.value = `${valuePrefix}:${f}`;
+                    o.textContent = f;
+                    og.appendChild(o);
+                });
+                sel.appendChild(og);
+            }
+            addOptgroup(rootOgLabel, rootFiles, 'root');
+            addOptgroup(poolOgLabel, poolFiles, 'pool');
+            if (!sel.options.length) {
+                const o = document.createElement('option');
+                o.value = `root:${defaultFile}`;
+                o.textContent = `${defaultFile}（未扫描到文件）`;
+                sel.appendChild(o);
+            }
+            const saved = localStorage.getItem(storageKey);
+            const candidates = [].concat(
+                extraCandidates || [],
+                [saved, rootFiles.includes(defaultFile) ? `root:${defaultFile}` : null, rootFiles.length ? `root:${rootFiles[0]}` : null, poolFiles.length ? `pool:${poolFiles[0]}` : null, `root:${defaultFile}`].filter(Boolean)
+            );
+            let picked = null;
+            for (const c of candidates) {
+                if (!c) continue;
+                const p = parsePreSelection(c);
+                if (!p) continue;
+                if ([...sel.options].some((opt) => opt.value === c)) {
+                    picked = c;
+                    break;
+                }
+            }
+            sel.value = picked || `root:${defaultFile}`;
+            localStorage.setItem(storageKey, sel.value);
+        }
+
+        async function loadAnnounceAudioSelects(showToastOnOk) {
+            if (!serverPort) {
+                if (showToastOnOk) showToast('请先等待服务就绪', true);
+                return;
+            }
+            try {
+                const [rPre, rPreP, rPx, rPxP, rSx, rSxP] = await Promise.all([
+                    fetch(`http://localhost:${serverPort}/announce-pres`),
+                    fetch(`http://localhost:${serverPort}/announce-pre-pool`),
+                    fetch(`http://localhost:${serverPort}/announce-prefix`),
+                    fetch(`http://localhost:${serverPort}/announce-prefix-pool`),
+                    fetch(`http://localhost:${serverPort}/announce-suffix`),
+                    fetch(`http://localhost:${serverPort}/announce-suffix-pool`),
+                ]);
+                const dPre = await rPre.json();
+                const dPreP = await rPreP.json();
+                const dPx = await rPx.json();
+                const dPxP = await rPxP.json();
+                const dSx = await rSx.json();
+                const dSxP = await rSxP.json();
+
+                announcePreRootList = Array.isArray(dPre.files) ? dPre.files : [];
+                announcePrePoolList = Array.isArray(dPreP.files) ? dPreP.files : [];
+                announcePrefixRootList = Array.isArray(dPx.files) ? dPx.files : [];
+                announcePrefixPoolList = Array.isArray(dPxP.files) ? dPxP.files : [];
+                announceSuffixRootList = Array.isArray(dSx.files) ? dSx.files : [];
+                announceSuffixPoolList = Array.isArray(dSxP.files) ? dSxP.files : [];
+
+                const legacy = localStorage.getItem(ANNOUNCE_PRE_FILE_KEY);
+                const legacyCand = legacy ? [`root:${legacy}`] : [];
+                fillAffixSelect(
+                    'announcePreFileSelect',
+                    ANNOUNCE_PRE_SELECTION_KEY,
+                    announcePreRootList,
+                    announcePrePoolList,
+                    '根目录 announce/（pre*.mp3）',
+                    '文件夹 announce/pre_pool/',
+                    'pre.mp3',
+                    legacyCand
+                );
+                if (legacy) localStorage.removeItem(ANNOUNCE_PRE_FILE_KEY);
+
+                fillAffixSelect(
+                    'announcePrefixFileSelect',
+                    ANNOUNCE_PREFIX_SELECTION_KEY,
+                    announcePrefixRootList,
+                    announcePrefixPoolList,
+                    '根目录 announce/（prefix*.mp3）',
+                    '文件夹 announce/prefix_pool/',
+                    'prefix.mp3',
+                    null
+                );
+
+                fillAffixSelect(
+                    'announceSuffixFileSelect',
+                    ANNOUNCE_SUFFIX_SELECTION_KEY,
+                    announceSuffixRootList,
+                    announceSuffixPoolList,
+                    '根目录 announce/（suffix*.mp3）',
+                    '文件夹 announce/suffix_pool/',
+                    'suffix.mp3',
+                    null
+                );
+
+                if (showToastOnOk) showToast('预录音轨列表已更新');
+            } catch (e) {
+                console.warn(e);
+                if (showToastOnOk) showToast('加载预录音轨列表失败', true);
+            }
+        }
+
+        function onAnnouncePreFileChange() {
+            const sel = document.getElementById('announcePreFileSelect');
+            if (!sel || !sel.value) return;
+            localStorage.setItem(ANNOUNCE_PRE_SELECTION_KEY, sel.value);
+        }
+
+        function onAnnouncePrefixFileChange() {
+            const sel = document.getElementById('announcePrefixFileSelect');
+            if (!sel || !sel.value) return;
+            localStorage.setItem(ANNOUNCE_PREFIX_SELECTION_KEY, sel.value);
+        }
+
+        function onAnnounceSuffixFileChange() {
+            const sel = document.getElementById('announceSuffixFileSelect');
+            if (!sel || !sel.value) return;
+            localStorage.setItem(ANNOUNCE_SUFFIX_SELECTION_KEY, sel.value);
+        }
+
+        /** 中间段是否用系统 TTS 读编号（否则播 numbers/编号.mp3） */
+        function getAnnounceMiddleTts() {
+            const v = localStorage.getItem(ANNOUNCE_MIDDLE_TTS_KEY);
+            if (v === null || v === '') return true;
+            return v === '1' || v === 'true';
+        }
+
+        function getAnnounceMode() {
+            const m = localStorage.getItem(ANNOUNCE_MODE_STORAGE_KEY);
+            if (m === 'tts' || m === 'audio' || m === 'audio_tts') return m;
+            return 'audio_tts';
+        }
+
+        function announceAudioBaseUrl() {
+            if (!serverPort) return null;
+            return `http://localhost:${serverPort}/audio/announce`;
+        }
+
+        function sanitizeAnnounceFileId(id) {
+            return String(id).replace(/[/\\:*?"<>|]/g, '_');
+        }
+
+        function playAudioClip(url) {
+            return new Promise((resolve, reject) => {
+                const a = new Audio();
+                let done = false;
+                function finish(ok) {
+                    if (done) return;
+                    done = true;
+                    a.onended = null;
+                    a.onerror = null;
+                    if (ok) resolve();
+                    else reject(new Error('音频播放失败: ' + url));
+                }
+                a.onended = () => finish(true);
+                a.onerror = () => finish(false);
+                a.src = url;
+                a.play().catch(() => finish(false));
+            });
+        }
+
+        /** 仅朗读编号文本（系统 TTS），用于夹在 prefix / suffix 之间 */
+        function speakAnnounceLabelTts(label) {
+            return new Promise((resolve, reject) => {
+                if (!('speechSynthesis' in window)) {
+                    reject(new Error('不支持 TTS'));
+                    return;
+                }
+                const u = new SpeechSynthesisUtterance(String(label));
+                applyAnnounceVoice(u);
+                u.rate = 1;
+                u.onend = () => resolve();
+                u.onerror = () => resolve();
+                window.speechSynthesis.speak(u);
+            });
+        }
+
+        /** 拼接：所选片头 → 所选 prefix →（系统 TTS 读编号 | numbers/编号.mp3）→ 所选 suffix */
+        async function playAnnounceAudioSequence(baseUrl, label) {
+            await playAudioClip(getPrePlaybackUrl(baseUrl));
+            await playAudioClip(getPrefixPlaybackUrl(baseUrl));
+            if (getAnnounceMiddleTts()) {
+                await speakAnnounceLabelTts(label);
+            } else {
+                const safe = sanitizeAnnounceFileId(label);
+                await playAudioClip(`${baseUrl}/numbers/${encodeURIComponent(safe)}.mp3`);
+            }
+            await playAudioClip(getSuffixPlaybackUrl(baseUrl));
+        }
+
+        function announceTemplateText(id) {
+            return `保洁员请注意，${id}已下机，请及时打扫桌面卫生`;
+        }
+
+        function announceInUseToIdleTts(numbers) {
+            if (!numbers || numbers.length === 0) return;
+            if (!('speechSynthesis' in window)) {
+                console.warn('当前环境不支持语音播报');
+                return;
+            }
+            try {
+                window.speechSynthesis.cancel();
+                const parts = numbers.map((n) => String(n == null ? '' : n).trim()).filter(Boolean);
+                if (!parts.length) return;
+                function speakIndex(i) {
+                    if (i >= parts.length) return;
+                    const u = new SpeechSynthesisUtterance(announceTemplateText(parts[i]));
+                    applyAnnounceVoice(u);
+                    u.rate = 1;
+                    u.onend = () => speakIndex(i + 1);
+                    window.speechSynthesis.speak(u);
+                }
+                speakIndex(0);
+            } catch (e) {
+                console.warn('语音播报失败:', e);
+            }
+        }
+
+        async function announceInUseToIdleAudioOrHybrid(numbers, mode) {
+            const parts = numbers.map((n) => String(n == null ? '' : n).trim()).filter(Boolean);
+            if (!parts.length) return;
+            const base = announceAudioBaseUrl();
+            const fallbackTts = mode === 'audio_tts';
+            const strictAudio = mode === 'audio';
+
+            if (!base && (strictAudio || fallbackTts)) {
+                if (fallbackTts || !strictAudio) announceInUseToIdleTts(numbers);
+                else showToast('服务未就绪，无法播放预录音频', true);
+                return;
+            }
+
+            for (const id of parts) {
+                try {
+                    window.speechSynthesis.cancel();
+                    await playAnnounceAudioSequence(base, id);
+                } catch (e) {
+                    console.warn('预录拼接失败，编号:', id, e);
+                    if (fallbackTts) {
+                        window.speechSynthesis.cancel();
+                        await new Promise((resolve) => {
+                            const u = new SpeechSynthesisUtterance(announceTemplateText(id));
+                            applyAnnounceVoice(u);
+                            u.rate = 1;
+                            u.onend = resolve;
+                            u.onerror = resolve;
+                            window.speechSynthesis.speak(u);
+                        });
+                    } else if (strictAudio) {
+                        showToast(`预录音频不完整或无法播放：${id}`, true);
+                    }
+                }
+            }
+        }
+
+        function onAnnounceModeChange() {
+            const sel = document.getElementById('announceModeSelect');
+            if (!sel) return;
+            localStorage.setItem(ANNOUNCE_MODE_STORAGE_KEY, sel.value);
+        }
+
+        function syncAnnounceModeSelect() {
+            const sel = document.getElementById('announceModeSelect');
+            if (!sel) return;
+            const v = getAnnounceMode();
+            if ([...sel.options].some((o) => o.value === v)) sel.value = v;
+        }
+
+        function getSpeechVoices() {
+            if (!window.speechSynthesis) return [];
+            return window.speechSynthesis.getVoices() || [];
+        }
+
+        function getSavedAnnounceVoice() {
+            const uri = localStorage.getItem(ANNOUNCE_VOICE_STORAGE_KEY);
+            if (!uri) return null;
+            return getSpeechVoices().find((v) => v.voiceURI === uri) || null;
+        }
+
+        /** TTS 相对音量，0～1（浏览器 API 上限为 1） */
+        function getAnnounceTtsVolume() {
+            const raw = localStorage.getItem(ANNOUNCE_TTS_VOLUME_KEY);
+            const v = parseFloat(raw);
+            if (!Number.isFinite(v)) return 1;
+            return Math.min(1, Math.max(0, v));
+        }
+
+        function syncAnnounceTtsVolumeSlider() {
+            const el = document.getElementById('announceTtsVolumeSlider');
+            const pct = document.getElementById('announceTtsVolumePct');
+            if (!el) return;
+            const p = Math.round(getAnnounceTtsVolume() * 100);
+            el.value = String(p);
+            if (pct) pct.textContent = `${p}%`;
+        }
+
+        function onAnnounceTtsVolumeInput() {
+            const el = document.getElementById('announceTtsVolumeSlider');
+            const pct = document.getElementById('announceTtsVolumePct');
+            if (!el) return;
+            const p = Math.min(100, Math.max(0, parseInt(el.value, 10) || 0));
+            localStorage.setItem(ANNOUNCE_TTS_VOLUME_KEY, String(p / 100));
+            if (pct) pct.textContent = `${p}%`;
+        }
+
+        /** 将所选音色与音量应用到 SpeechSynthesisUtterance */
+        function applyAnnounceVoice(u) {
+            const voice = getSavedAnnounceVoice();
+            if (voice) {
+                u.voice = voice;
+                u.lang = voice.lang || 'zh-CN';
+            } else {
+                u.lang = 'zh-CN';
+            }
+            u.volume = getAnnounceTtsVolume();
+        }
+
+        function fillAnnounceVoiceSelect() {
+            const sel = document.getElementById('announceVoiceSelect');
+            if (!sel || !window.speechSynthesis) return;
+            const saved = localStorage.getItem(ANNOUNCE_VOICE_STORAGE_KEY) || '';
+            const voices = getSpeechVoices()
+                .slice()
+                .sort((a, b) => String(a.lang + a.name).localeCompare(String(b.lang + b.name), 'zh'));
+            sel.innerHTML = '';
+            const optDef = document.createElement('option');
+            optDef.value = '';
+            optDef.textContent = '系统默认';
+            sel.appendChild(optDef);
+            voices.forEach((v) => {
+                const o = document.createElement('option');
+                o.value = v.voiceURI;
+                o.textContent = `${v.name} (${v.lang})`;
+                sel.appendChild(o);
+            });
+            if (saved && [...sel.options].some((opt) => opt.value === saved)) {
+                sel.value = saved;
+            } else {
+                sel.value = '';
+            }
+        }
+
+        function onAnnounceVoiceSelectChange() {
+            const sel = document.getElementById('announceVoiceSelect');
+            if (!sel) return;
+            localStorage.setItem(ANNOUNCE_VOICE_STORAGE_KEY, sel.value);
+        }
+
+        function refreshAnnounceVoices() {
+            fillAnnounceVoiceSelect();
+            showToast('语音列表已更新');
+        }
+
+        async function testAnnounceVoice() {
+            const mode = getAnnounceMode();
+            if (mode === 'tts') {
+                if (!('speechSynthesis' in window)) {
+                    showToast('当前环境不支持 TTS', true);
+                    return;
+                }
+                try {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(announceTemplateText('测试'));
+                    applyAnnounceVoice(u);
+                    u.rate = 1;
+                    window.speechSynthesis.speak(u);
+                } catch (e) {
+                    console.warn('试听失败:', e);
+                    showToast('试听失败', true);
+                }
+                return;
+            }
+            const base = announceAudioBaseUrl();
+            if (!base) {
+                showToast('端口未就绪，请稍后', true);
+                return;
+            }
+            try {
+                window.speechSynthesis.cancel();
+                await playAnnounceAudioSequence(base, '测试');
+                showToast('预录试听播放完成');
+            } catch (e) {
+                console.warn(e);
+                if (mode === 'audio_tts') {
+                    window.speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(announceTemplateText('测试'));
+                    applyAnnounceVoice(u);
+                    u.rate = 1;
+                    window.speechSynthesis.speak(u);
+                    showToast('预录文件缺失，已用整段 TTS 回退试听');
+                } else {
+                    showToast(
+                        getAnnounceMiddleTts()
+                            ? `请检查片头「${getPreSelectionLabel()}」、prefix「${getPrefixSelectionLabel()}」、suffix「${getSuffixSelectionLabel()}」是否存在`
+                            : `请检查片头「${getPreSelectionLabel()}」、prefix「${getPrefixSelectionLabel()}」、suffix「${getSuffixSelectionLabel()}」、numbers/测试.mp3`,
+                        true
+                    );
+                }
+            }
+        }
+
+        function escapeAttr(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;');
+        }
+
+        function escapeHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function focusAppWindow() {
+            if (window.api && typeof window.api.focusWindow === 'function') {
+                window.api.focusWindow();
+            }
+        }
+
+        /** 状态从使用中(1)变为空闲(0)时播报（TTS 或 预录拼接） */
+        function announceInUseToIdle(numbers) {
+            const mode = getAnnounceMode();
+            if (mode === 'tts') {
+                announceInUseToIdleTts(numbers);
+            } else {
+                announceInUseToIdleAudioOrHybrid(numbers, mode);
+            }
+        }
+
+        const IDLE_DOWN_LOG_STORAGE = 'idleDownLogEntries';
+        const IDLE_DOWN_LOG_MAX = 80;
+        let idleDownLogEntries = [];
+
+        function newIdleDownLogId() {
+            return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+        }
+
+        function loadIdleDownLogFromStorage() {
+            try {
+                const raw = localStorage.getItem(IDLE_DOWN_LOG_STORAGE);
+                if (!raw) return;
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr)) {
+                    idleDownLogEntries = arr
+                        .filter((e) => e && e.number != null && e.ts != null)
+                        .slice(0, IDLE_DOWN_LOG_MAX);
+                    let migrated = false;
+                    idleDownLogEntries.forEach((e) => {
+                        if (!e.id) {
+                            e.id = newIdleDownLogId();
+                            migrated = true;
+                        }
+                    });
+                    if (migrated) persistIdleDownLog();
+                }
+            } catch (_) {
+                idleDownLogEntries = [];
+            }
+        }
+
+        function persistIdleDownLog() {
+            try {
+                localStorage.setItem(
+                    IDLE_DOWN_LOG_STORAGE,
+                    JSON.stringify(idleDownLogEntries.slice(0, IDLE_DOWN_LOG_MAX))
+                );
+            } catch (_) {}
+        }
+
+        function renderIdleDownLog() {
+            const root = document.getElementById('idleDownLogMasonry');
+            if (!root) return;
+            root.innerHTML = '';
+            idleDownLogEntries.forEach((e) => {
+                const card = document.createElement('div');
+                card.className = 'idle-down-log-card';
+                const t = new Date(e.ts);
+                const timeStr = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}:${String(t.getSeconds()).padStart(2, '0')}`;
+                const idAttr = escapeAttr(String(e.id || ''));
+                card.innerHTML = `
+                    <span class="num">${escapeHtml(e.number)}</span>
+                    <span class="msg">已下机，请及时打扫。</span>
+                    <div class="time">${escapeHtml(timeStr)}</div>
+                    <button type="button" class="idle-down-log-read-btn" data-id="${idAttr}" onclick="dismissIdleDownLogEntry(this.getAttribute('data-id'))">已读</button>
+                `;
+                root.appendChild(card);
+            });
+        }
+
+        function dismissIdleDownLogEntry(id) {
+            if (!id) return;
+            idleDownLogEntries = idleDownLogEntries.filter((e) => String(e.id) !== String(id));
+            persistIdleDownLog();
+            renderIdleDownLog();
+        }
+
+        function pushIdleDownLogItems(labels) {
+            const now = Date.now();
+            labels.forEach((num) => {
+                idleDownLogEntries.unshift({ id: newIdleDownLogId(), number: String(num), ts: now });
+            });
+            idleDownLogEntries = idleDownLogEntries.slice(0, IDLE_DOWN_LOG_MAX);
+            persistIdleDownLog();
+            renderIdleDownLog();
+        }
+
+        function clearIdleDownLog() {
+            idleDownLogEntries = [];
+            persistIdleDownLog();
+            renderIdleDownLog();
+        }
+
+        /** 与上一次快照对比后更新快照；若出现 1→0 则播报并记下机记录 */
+        function updatePrevSnapshotAndAnnounce(validatedList) {
+            const announced = [];
+            for (const item of validatedList) {
+                const ip = item.ip;
+                if (!ip) continue;
+                const prev = prevStatusByIp[ip];
+                const cur = Number(item.status);
+                const prevSt = prev != null ? Number(prev.status) : NaN;
+                if (prevSt === 1 && cur === 0) {
+                    let label = String(item.number != null ? item.number : '').trim();
+                    if (!label || label === '未知') {
+                        label = ip;
+                    }
+                    announced.push(label);
+                }
+            }
+            prevStatusByIp = Object.create(null);
+            for (const item of validatedList) {
+                if (item.ip) {
+                    prevStatusByIp[item.ip] = {
+                        status: Number(item.status),
+                        number: item.number,
+                    };
+                }
+            }
+            if (announced.length) {
+                pushIdleDownLogItems(announced);
+                announceInUseToIdle(announced);
+            }
+        }
+
+        /** 替代原生 confirm，避免 Electron 关闭对话框后页面无法点击 */
+        function showConfirm(message) {
+            return new Promise((resolve) => {
+                const overlay = document.getElementById('appConfirmOverlay');
+                const textEl = document.getElementById('appConfirmMessage');
+                const btnOk = document.getElementById('appConfirmOk');
+                const btnCancel = document.getElementById('appConfirmCancel');
+                if (!overlay || !textEl || !btnOk || !btnCancel) {
+                    resolve(window.confirm(message));
+                    return;
+                }
+                textEl.textContent = message;
+                overlay.classList.add('is-open');
+                overlay.setAttribute('aria-hidden', 'false');
+
+                function finish(val) {
+                    overlay.classList.remove('is-open');
+                    overlay.setAttribute('aria-hidden', 'true');
+                    btnOk.removeEventListener('click', onOk);
+                    btnCancel.removeEventListener('click', onCancel);
+                    overlay.removeEventListener('click', onBackdrop);
+                    document.removeEventListener('keydown', onKey);
+                    resolve(val);
+                    requestAnimationFrame(() => focusAppWindow());
+                }
+
+                function onOk() {
+                    finish(true);
+                }
+                function onCancel() {
+                    finish(false);
+                }
+                function onBackdrop(e) {
+                    if (e.target === overlay) finish(false);
+                }
+                function onKey(e) {
+                    if (!overlay.classList.contains('is-open')) return;
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        finish(false);
+                    }
+                }
+
+                btnOk.addEventListener('click', onOk);
+                btnCancel.addEventListener('click', onCancel);
+                overlay.addEventListener('click', onBackdrop);
+                document.addEventListener('keydown', onKey);
+                setTimeout(() => btnOk.focus(), 0);
+            });
+        }
+
+        function showToast(message, isError) {
+            let el = document.getElementById('appToast');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'appToast';
+                el.setAttribute('role', 'status');
+                document.body.appendChild(el);
+            }
+            el.textContent = message;
+            el.className = 'app-toast' + (isError ? ' error' : '');
+            el.classList.add('visible');
+            clearTimeout(showToast._hideTimer);
+            showToast._hideTimer = setTimeout(() => {
+                el.classList.remove('visible');
+            }, 2800);
+        }
 
         // 在页面加载时获取端口
         async function initializePort() {
@@ -427,8 +1455,12 @@
 
         async function toggleAddIpDrawer() {
             const drawer = document.getElementById('addIpDrawer');
+            const toggle = document.getElementById('addIpToggle');
             const isOpen = drawer.classList.contains('open');
             drawer.classList.toggle('open');
+            if (toggle) {
+                toggle.textContent = drawer.classList.contains('open') ? '<' : '>';
+            }
             if (!isOpen) {
                 // 等待动画完成（0.3s）后再聚焦
                 setTimeout(() => {
@@ -436,10 +1468,8 @@
                     ipInput.disabled = false;
                     ipInput.readOnly = false;
                     ipInput.focus();
-                    // 确保 Electron 窗口获得焦点
-                    if (window.require) {
-                        const { ipcRenderer } = require('electron');
-                        ipcRenderer.send('focus-window');
+                    if (window.api && typeof window.api.focusWindow === 'function') {
+                        window.api.focusWindow();
                     }
                 }, 300); // 匹配 CSS transition: left 0.3s ease
             }
@@ -448,10 +1478,10 @@
         async function addIp() {
             const ip = document.getElementById('ipInput').value.trim();
             const number = document.getElementById('numberInput').value.trim();
-            const button = document.querySelector('#addIpDrawer .form-container button[onclick="addIp()"]');
+            const button = document.getElementById('btnAddIp');
 
             if (!ip || !number) {
-                alert('IP 和编号不能为空');
+                showToast('IP 和编号不能为空', true);
                 return;
             }
 
@@ -469,18 +1499,17 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('IP 添加成功');
+                    showToast('IP 添加成功');
                     document.getElementById('ipInput').value = '';
                     document.getElementById('numberInput').value = '';
                     fetchStatus();
                     updateIpList();
-                    toggleAddIpDrawer();
                 } else {
-                    alert(`添加失败: ${result.error}`);
+                    showToast(`添加失败: ${result.error}`, true);
                 }
             } catch (error) {
                 console.error('添加 IP 失败:', error);
-                alert('添加 IP 失败');
+                showToast('添加 IP 失败', true);
             } finally {
                 // 恢复按钮状态
                 button.classList.remove('loading');
@@ -497,8 +1526,145 @@
             }
         }
 
+        async function batchAddIp() {
+            const startIp = document.getElementById('batchStartIp').value.trim();
+            const endIp = document.getElementById('batchEndIp').value.trim();
+            const numberPrefix = document.getElementById('batchNumberPrefix').value.trim();
+            const numberStart = parseInt(document.getElementById('batchNumberStart').value, 10);
+            const numberDigits = parseInt(document.getElementById('batchNumberDigits').value, 10);
+            const button = document.getElementById('btnBatchAddIp');
+
+            if (!startIp || !endIp) {
+                showToast('请填写起始 IP 与结束 IP', true);
+                return;
+            }
+
+            button.classList.add('loading');
+            button.disabled = true;
+            button.textContent = '批量添加中...';
+
+            try {
+                const response = await fetch(`http://localhost:${serverPort}/batch-add-ip`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        startIp,
+                        endIp,
+                        numberPrefix,
+                        numberStart: Number.isFinite(numberStart) ? numberStart : 1,
+                        numberDigits: Number.isFinite(numberDigits) ? numberDigits : 2,
+                    }),
+                });
+                const result = await response.json();
+
+                if (response.ok) {
+                    const a = result.addedCount != null ? result.addedCount : 0;
+                    const s = result.skippedCount != null ? result.skippedCount : 0;
+                    showToast(`批量完成：新增 ${a} 个，跳过 ${s} 个（已存在）`);
+                    document.getElementById('batchStartIp').value = '';
+                    document.getElementById('batchEndIp').value = '';
+                    fetchStatus();
+                    updateIpList();
+                } else {
+                    showToast(result.error || '批量添加失败', true);
+                }
+            } catch (error) {
+                console.error('批量添加失败:', error);
+                showToast('批量添加失败', true);
+            } finally {
+                button.classList.remove('loading');
+                button.disabled = false;
+                button.textContent = '批量添加';
+                document.getElementById('batchStartIp').disabled = false;
+                document.getElementById('batchEndIp').disabled = false;
+                document.getElementById('batchNumberPrefix').disabled = false;
+                document.getElementById('batchNumberStart').disabled = false;
+                document.getElementById('batchNumberDigits').disabled = false;
+            }
+        }
+
+        function syncIpListSelectAllState() {
+            const selAll = document.getElementById('ipListSelectAll');
+            if (!selAll) return;
+            const boxes = document.querySelectorAll('#ipListBody .ip-list-check');
+            if (boxes.length === 0) {
+                selAll.checked = false;
+                selAll.indeterminate = false;
+                return;
+            }
+            const n = [...boxes].filter((cb) => cb.checked).length;
+            selAll.checked = n === boxes.length;
+            selAll.indeterminate = n > 0 && n < boxes.length;
+        }
+
+        (function initIpListSelectAllDelegation() {
+            const table = document.getElementById('ipList');
+            if (!table) return;
+            table.addEventListener('change', (e) => {
+                const t = e.target;
+                if (t && t.id === 'ipListSelectAll') {
+                    document.querySelectorAll('#ipListBody .ip-list-check').forEach((cb) => {
+                        cb.checked = t.checked;
+                    });
+                    t.indeterminate = false;
+                    return;
+                }
+                if (t && t.classList && t.classList.contains('ip-list-check')) {
+                    syncIpListSelectAllState();
+                }
+            });
+        })();
+
+        async function batchDeleteSelectedIps() {
+            if (!serverPort) {
+                showToast('服务未就绪', true);
+                return;
+            }
+            const ips = [...document.querySelectorAll('#ipListBody .ip-list-check:checked')].map((cb) => cb.value);
+            if (ips.length === 0) {
+                showToast('请先勾选要删除的 IP', true);
+                return;
+            }
+            if (!(await showConfirm(`确定删除选中的 ${ips.length} 个 IP 吗？`))) return;
+
+            const button = document.getElementById('btnBatchDeleteIp');
+            if (button) {
+                button.disabled = true;
+                button.textContent = '删除中...';
+            }
+
+            try {
+                const response = await fetch(`http://localhost:${serverPort}/batch-delete-ip`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ips }),
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    const d = result.deletedCount != null ? result.deletedCount : 0;
+                    const nf = result.notFoundCount != null ? result.notFoundCount : 0;
+                    showToast(`已删除 ${d} 个${nf ? `，${nf} 个未找到` : ''}`);
+                    document.getElementById('ipListSelectAll').checked = false;
+                    document.getElementById('ipListSelectAll').indeterminate = false;
+                    await fetchStatus();
+                    updateIpList();
+                    requestAnimationFrame(() => focusAppWindow());
+                } else {
+                    showToast(result.error || '批量删除失败', true);
+                }
+            } catch (err) {
+                console.error('批量删除失败:', err);
+                showToast('批量删除失败', true);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = '删除所选';
+                }
+            }
+        }
+
         async function deleteIpFromList(ip) {
-            if (!confirm(`确定要删除 IP ${ip} 吗？`)) return;
+            if (!(await showConfirm(`确定要删除 IP ${ip} 吗？`))) return;
             try {
                 const response = await fetch(`http://localhost:${serverPort}/delete-ip`, {
                     method: 'POST',
@@ -507,15 +1673,16 @@
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('IP 删除成功');
+                    showToast('IP 删除成功');
                     await fetchStatus();
                     updateIpList();
+                    requestAnimationFrame(() => focusAppWindow());
                 } else {
-                    alert(`删除失败: ${result.error}`);
+                    showToast(result.error || '删除失败', true);
                 }
             } catch (error) {
                 console.error('删除 IP 失败:', error);
-                alert('删除 IP 失败');
+                showToast('删除 IP 失败', true);
             }
         }
 
@@ -583,11 +1750,11 @@
         }
 
         async function setIpStatus() {
-            const ip = document.getElementById('setStatusIpInput').value.trim();
-            const status = parseInt(document.getElementById('statusSelect').value);
-            const button = document.querySelector('#addIpDrawer .form-container button[onclick="setIpStatus()"]');
-            if (!ip) {
-                alert('IP 不能为空');
+            const target = document.getElementById('setStatusIpInput').value.trim();
+            const status = parseInt(document.getElementById('statusSelect').value, 10);
+            const button = document.getElementById('btnSetIpStatus');
+            if (!target) {
+                showToast('IP 或编号不能为空', true);
                 return;
             }
             button.classList.add('loading');
@@ -597,19 +1764,20 @@
                 const response = await fetch(`http://localhost:${serverPort}/set-status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ip, status }),
+                    body: JSON.stringify({ ip: target, status }),
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    alert('状态设置成功');
+                    const n = result.count != null ? result.count : 1;
+                    showToast(n > 1 ? `已更新 ${n} 台设备状态` : '状态设置成功');
                     document.getElementById('setStatusIpInput').value = '';
                     await fetchStatus();
                 } else {
-                    alert(`设置状态失败: ${result.error}`);
+                    showToast(result.error || '设置状态失败', true);
                 }
             } catch (error) {
                 console.error('设置状态失败:', error);
-                alert('设置状态失败');
+                showToast('设置状态失败', true);
             } finally {
                 button.classList.remove('loading');
                 button.disabled = false;
@@ -768,21 +1936,27 @@
                 const ipListBody = document.getElementById('ipListBody');
                 ipListBody.innerHTML = '';
                 if (statusList.length === 0) {
-                    ipListBody.innerHTML = '<tr><td colspan="3">暂无 IP</td></tr>';
+                    ipListBody.innerHTML = '<tr><td colspan="4">暂无 IP</td></tr>';
+                    syncIpListSelectAllState();
                     return;
                 }
                 statusList.forEach(item => {
                     const row = document.createElement('tr');
+                    const ip = item.ip || '';
+                    const num = item.number != null ? item.number : '';
                     row.innerHTML = `
-                        <td>${item.ip}</td>
-                        <td>${item.number}</td>
-                        <td><button class="ip-delete-btn" onclick="deleteIpFromList('${item.ip}')">删除</button></td>
+                        <td class="col-check"><input type="checkbox" class="ip-list-check" value="${escapeAttr(ip)}"></td>
+                        <td>${escapeHtml(ip)}</td>
+                        <td>${escapeHtml(num)}</td>
+                        <td><button type="button" class="ip-delete-btn" data-ip="${escapeAttr(ip)}" onclick="deleteIpFromList(this.getAttribute('data-ip'))">删除</button></td>
                     `;
                     ipListBody.appendChild(row);
                 });
+                syncIpListSelectAllState();
             } catch (error) {
                 console.error('获取 IP 列表失败:', error);
-                document.getElementById('ipListBody').innerHTML = '<tr><td colspan="3">获取失败</td></tr>';
+                document.getElementById('ipListBody').innerHTML = '<tr><td colspan="4">获取失败</td></tr>';
+                syncIpListSelectAllState();
             }
         }
 
@@ -808,6 +1982,8 @@
                     width: item.width || 150,
                     height: item.height || 150
                 }));
+
+                updatePrevSnapshotAndAnnounce(validatedList);
 
                 const statusContainer = document.getElementById('statusContainer');
                 statusContainer.innerHTML = `
@@ -886,12 +2062,57 @@
         }
 
         // 初始化
+        if (window.speechSynthesis) {
+            window.speechSynthesis.addEventListener('voiceschanged', fillAnnounceVoiceSelect);
+        }
+        fillAnnounceVoiceSelect();
+        setTimeout(fillAnnounceVoiceSelect, 400);
+        const _announceVoiceSel = document.getElementById('announceVoiceSelect');
+        if (_announceVoiceSel) {
+            _announceVoiceSel.addEventListener('change', onAnnounceVoiceSelectChange);
+        }
+        const _announceTtsVol = document.getElementById('announceTtsVolumeSlider');
+        if (_announceTtsVol) {
+            syncAnnounceTtsVolumeSlider();
+            _announceTtsVol.addEventListener('input', onAnnounceTtsVolumeInput);
+        }
+        const _announceModeSel = document.getElementById('announceModeSelect');
+        if (_announceModeSel) {
+            syncAnnounceModeSelect();
+            _announceModeSel.addEventListener('change', onAnnounceModeChange);
+        }
+        const _announceMiddleTtsCb = document.getElementById('announceMiddleTts');
+        if (_announceMiddleTtsCb) {
+            _announceMiddleTtsCb.checked = getAnnounceMiddleTts();
+            _announceMiddleTtsCb.addEventListener('change', () => {
+                localStorage.setItem(ANNOUNCE_MIDDLE_TTS_KEY, _announceMiddleTtsCb.checked ? '1' : '0');
+            });
+        }
+        const _announcePreSel = document.getElementById('announcePreFileSelect');
+        if (_announcePreSel) {
+            _announcePreSel.addEventListener('change', onAnnouncePreFileChange);
+        }
+        const _announcePrefixSel = document.getElementById('announcePrefixFileSelect');
+        if (_announcePrefixSel) {
+            _announcePrefixSel.addEventListener('change', onAnnouncePrefixFileChange);
+        }
+        const _announceSuffixSel = document.getElementById('announceSuffixFileSelect');
+        if (_announceSuffixSel) {
+            _announceSuffixSel.addEventListener('change', onAnnounceSuffixFileChange);
+        }
+
+        loadIdleDownLogFromStorage();
+        renderIdleDownLog();
+
         initializePort().then(() => {
             setInterval(fetchStatus, 30 * 1000);
             fetchStatus();
             makeResizable();
             loadBackgroundImage();
             loadTitle();
+            fillAnnounceVoiceSelect();
+            syncAnnounceModeSelect();
+            loadAnnounceAudioSelects(false);
             document.addEventListener('DOMContentLoaded', () => {
                 updateIpList();
             });

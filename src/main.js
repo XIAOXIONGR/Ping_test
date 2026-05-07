@@ -6,10 +6,18 @@ const fs = require('fs');
 const { loadIpList, pingIp, getIpList } = require('./utils/ping');
 const status = require('./api/status');
 const addIp = require('./api/addIp');
+const batchAddIp = require('./api/batchAddIp');
 const deleteIp = require('./api/deleteIp');
+const batchDeleteIp = require('./api/batchDeleteIp');
 const setStatus = require('./api/setStatus');
 const updatePosition = require('./api/updatePosition');
 const updateSize = require('./api/updateSize');
+const { listAnnouncePres } = require('./api/listAnnouncePres');
+const { listAnnouncePrePool } = require('./api/listAnnouncePrePool');
+const { listAnnouncePrefix } = require('./api/listAnnouncePrefix');
+const { listAnnouncePrefixPool } = require('./api/listAnnouncePrefixPool');
+const { listAnnounceSuffix } = require('./api/listAnnounceSuffix');
+const { listAnnounceSuffixPool } = require('./api/listAnnounceSuffixPool');
 
 // 日志设置
 const logPath = path.join(app.getPath('userData'), 'app.log');
@@ -172,10 +180,18 @@ serverApp.get('/', (req, res) => {
 // API 路由
 serverApp.get('/status', status);
 serverApp.post('/add-ip', addIp);
+serverApp.post('/batch-add-ip', batchAddIp);
 serverApp.post('/delete-ip', deleteIp);
+serverApp.post('/batch-delete-ip', batchDeleteIp);
 serverApp.post('/set-status', setStatus);
 serverApp.post('/update-position', updatePosition);
 serverApp.post('/update-size', updateSize);
+serverApp.get('/announce-pres', listAnnouncePres);
+serverApp.get('/announce-pre-pool', listAnnouncePrePool);
+serverApp.get('/announce-prefix', listAnnouncePrefix);
+serverApp.get('/announce-prefix-pool', listAnnouncePrefixPool);
+serverApp.get('/announce-suffix', listAnnounceSuffix);
+serverApp.get('/announce-suffix-pool', listAnnounceSuffixPool);
 
 async function startServer() {
     // 确保 ping.db 存在
@@ -331,9 +347,6 @@ app.whenReady().then(async () => {
         await startServer();
         await initializePing();
         createWindow();
-
-        // 处理前端请求端口的 IPC
-        ipcMain.handle('get-port', () => global.serverPort);
 
         app.on('activate', () => {
             if (BrowserWindow.getAllWindows().length === 0) createWindow();
