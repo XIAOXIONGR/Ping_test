@@ -217,10 +217,34 @@
             background-size: contain;
         }
 
+        /* 已添加 IP 列表：表头固定，正文区域约 6 行高，超出纵向滚动 */
+        .ip-list-scroll-wrapper {
+            max-height: calc(2.75rem + 6 * 2.6rem);
+            overflow-y: auto;
+            overflow-x: auto;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .ip-list-scroll-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .ip-list-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: #bdbdbd;
+            border-radius: 4px;
+        }
+
+        .ip-list-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #9e9e9e;
+        }
+
         #ipList {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 0;
         }
 
         #ipList th,
@@ -232,6 +256,10 @@
 
         #ipList th {
             background-color: #f5f5f5;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            box-shadow: 0 1px 0 #ddd;
         }
 
         #ipList .col-check {
@@ -615,19 +643,21 @@
         </div>
         <div class="form-container">
             <h2>已添加的 IP 列表</h2>
-            <table id="ipList">
-                <thead>
-                    <tr>
-                        <th class="col-check">
-                            <input type="checkbox" id="ipListSelectAll" title="全选">
-                        </th>
-                        <th>IP 地址</th>
-                        <th>编号</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="ipListBody"></tbody>
-            </table>
+            <div class="ip-list-scroll-wrapper">
+                <table id="ipList">
+                    <thead>
+                        <tr>
+                            <th class="col-check">
+                                <input type="checkbox" id="ipListSelectAll" title="全选">
+                            </th>
+                            <th>IP 地址</th>
+                            <th>编号</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ipListBody"></tbody>
+                </table>
+            </div>
             <div class="ip-list-toolbar">
                 <button type="button" class="ip-batch-delete-btn" id="btnBatchDeleteIp" onclick="batchDeleteSelectedIps()">删除所选</button>
             </div>
@@ -1021,28 +1051,46 @@
             return `保洁员请注意，${id}已下机，请及时打扫桌面卫生`;
         }
 
+        /** 多条下机播报串行：上一批整段播完（含预录+TTS）再播下一批 */
+        let announcePlaybackTail = Promise.resolve();
+
+        /** 纯 TTS 模式：返回在「本批所有编号都读完」后 resolve 的 Promise */
         function announceInUseToIdleTts(numbers) {
-            if (!numbers || numbers.length === 0) return;
-            if (!('speechSynthesis' in window)) {
-                console.warn('当前环境不支持语音播报');
-                return;
-            }
-            try {
-                window.speechSynthesis.cancel();
-                const parts = numbers.map((n) => String(n == null ? '' : n).trim()).filter(Boolean);
-                if (!parts.length) return;
-                function speakIndex(i) {
-                    if (i >= parts.length) return;
-                    const u = new SpeechSynthesisUtterance(announceTemplateText(parts[i]));
-                    applyAnnounceVoice(u);
-                    u.rate = 1;
-                    u.onend = () => speakIndex(i + 1);
-                    window.speechSynthesis.speak(u);
+            return new Promise((resolve) => {
+                if (!numbers || numbers.length === 0) {
+                    resolve();
+                    return;
                 }
-                speakIndex(0);
-            } catch (e) {
-                console.warn('语音播报失败:', e);
-            }
+                if (!('speechSynthesis' in window)) {
+                    console.warn('当前环境不支持语音播报');
+                    resolve();
+                    return;
+                }
+                try {
+                    window.speechSynthesis.cancel();
+                    const parts = numbers.map((n) => String(n == null ? '' : n).trim()).filter(Boolean);
+                    if (!parts.length) {
+                        resolve();
+                        return;
+                    }
+                    function speakIndex(i) {
+                        if (i >= parts.length) {
+                            resolve();
+                            return;
+                        }
+                        const u = new SpeechSynthesisUtterance(announceTemplateText(parts[i]));
+                        applyAnnounceVoice(u);
+                        u.rate = 1;
+                        u.onend = () => speakIndex(i + 1);
+                        u.onerror = () => speakIndex(i + 1);
+                        window.speechSynthesis.speak(u);
+                    }
+                    speakIndex(0);
+                } catch (e) {
+                    console.warn('语音播报失败:', e);
+                    resolve();
+                }
+            });
         }
 
         async function announceInUseToIdleAudioOrHybrid(numbers, mode) {
@@ -1053,8 +1101,11 @@
             const strictAudio = mode === 'audio';
 
             if (!base && (strictAudio || fallbackTts)) {
-                if (fallbackTts || !strictAudio) announceInUseToIdleTts(numbers);
-                else showToast('服务未就绪，无法播放预录音频', true);
+                if (fallbackTts || !strictAudio) {
+                    await announceInUseToIdleTts(numbers);
+                } else {
+                    showToast('服务未就绪，无法播放预录音频', true);
+                }
                 return;
             }
 
@@ -1249,11 +1300,19 @@
 
         /** 状态从使用中(1)变为空闲(0)时播报（TTS 或 预录拼接） */
         function announceInUseToIdle(numbers) {
+            if (!numbers || numbers.length === 0) return;
+            announcePlaybackTail = announcePlaybackTail
+                .then(() => runAnnounceInUseToIdleJob(numbers))
+                .catch((e) => console.warn('播报队列:', e));
+        }
+
+        async function runAnnounceInUseToIdleJob(numbers) {
+            if (!numbers || numbers.length === 0) return;
             const mode = getAnnounceMode();
             if (mode === 'tts') {
-                announceInUseToIdleTts(numbers);
+                await announceInUseToIdleTts(numbers);
             } else {
-                announceInUseToIdleAudioOrHybrid(numbers, mode);
+                await announceInUseToIdleAudioOrHybrid(numbers, mode);
             }
         }
 

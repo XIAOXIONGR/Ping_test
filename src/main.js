@@ -1,9 +1,37 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
+
+const dbPath = path.join(app.getPath('userData'), 'ping.db');
+process.env.PING_DB_PATH = dbPath;
+
+/** 必须在加载 database 模块前复制模板库，否则 SQLite 会先建空库导致无法覆盖 */
+function ensureDatabaseFileSync() {
+    if (fs.existsSync(dbPath)) {
+        return;
+    }
+    try {
+        fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+    } catch (e) {
+        /* ignore */
+    }
+    const sourceDbPath = path.join(process.resourcesPath || '', 'ping.db');
+    const fallbackDbPath = path.join(__dirname, 'ping.db');
+    const finalSourcePath = fs.existsSync(sourceDbPath) ? sourceDbPath : fallbackDbPath;
+    if (!fs.existsSync(finalSourcePath)) {
+        return;
+    }
+    try {
+        fs.copyFileSync(finalSourcePath, dbPath);
+    } catch (err) {
+        console.error('复制 ping.db 失败:', err.message);
+    }
+}
+ensureDatabaseFileSync();
+
 const { loadIpList, pingIp, getIpList } = require('./utils/ping');
+const db = require('./db/database');
 const status = require('./api/status');
 const addIp = require('./api/addIp');
 const batchAddIp = require('./api/batchAddIp');
@@ -42,89 +70,7 @@ const serverApp = express();
 serverApp.use(express.json());
 serverApp.use(express.static(path.join(__dirname, '../public')));
 
-// 初始化数据库
-const dbPath = path.join(app.getPath('userData'), 'ping.db');
 log(`Database path: ${dbPath}`);
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        log(`数据库连接失败: ${err.message}`);
-    } else {
-        log('数据库连接成功');
-        // 在连接成功后创建表
-        initializeTables();
-    }
-});
-
-// 创建表
-function initializeTables() {
-    db.run(
-        `CREATE TABLE IF NOT EXISTS ip_list (
-            ip TEXT PRIMARY KEY,
-            number TEXT,
-            status INTEGER DEFAULT 0,
-            position_x INTEGER,
-            position_y INTEGER,
-            width INTEGER,
-            height INTEGER
-        )`,
-        (err) => {
-            if (err) {
-                log(`创建 ip_list 表失败: ${err.message}`);
-            } else {
-                log('ip_list 表初始化成功');
-            }
-        }
-    );
-    db.run(
-        `CREATE TABLE IF NOT EXISTS ping_records (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip TEXT,
-            status INTEGER,
-            latency INTEGER,
-            timestamp TEXT
-        )`,
-        (err) => {
-            if (err) {
-                log(`创建 ping_records 表失败: ${err.message}`);
-            } else {
-                log('ping_records 表初始化成功');
-            }
-        }
-    );
-}
-
-// 确保 ping.db 存在并复制
-function ensureDatabaseFile() {
-    return new Promise((resolve, reject) => {
-        if (fs.existsSync(dbPath)) {
-            log('ping.db 已存在于用户数据目录');
-            resolve();
-            return;
-        }
-        // 打包环境下的 ping.db 路径
-        const sourceDbPath = path.join(
-            process.resourcesPath,
-            'ping.db'
-        );
-        const fallbackDbPath = path.join(__dirname, 'ping.db'); // 开发环境
-        const finalSourcePath = fs.existsSync(sourceDbPath) ? sourceDbPath : fallbackDbPath;
-
-        if (!fs.existsSync(finalSourcePath)) {
-            log('源 ping.db 不存在，将创建新数据库');
-            resolve(); // SQLite 会创建空文件
-            return;
-        }
-
-        try {
-            fs.copyFileSync(finalSourcePath, dbPath);
-            log(`复制 ping.db 从 ${finalSourcePath} 到用户数据目录`);
-            resolve();
-        } catch (err) {
-            log(`复制 ping.db 失败: ${err.message}`);
-            reject(err);
-        }
-    });
-}
 
 // 初始化 IP 列表和定时 ping
 async function initializePing() {
@@ -194,9 +140,6 @@ serverApp.get('/announce-suffix', listAnnounceSuffix);
 serverApp.get('/announce-suffix-pool', listAnnounceSuffixPool);
 
 async function startServer() {
-    // 确保 ping.db 存在
-    await ensureDatabaseFile();
-
     // 启动 Express 服务器
     return new Promise((resolve, reject) => {
         const server = serverApp.listen(0, () => {

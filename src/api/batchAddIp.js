@@ -31,7 +31,7 @@ function insertOne(ip, number) {
   return new Promise((resolve, reject) => {
     db.run(
       `INSERT INTO ip_list (ip, number, status, position_x, position_y, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [ip, number, 0, 0, 40, 150, 150],
+      [ip, number, 0, 0, 40, 67, 50],
       function (err) {
         if (err) {
           if (err.message && err.message.includes('UNIQUE')) {

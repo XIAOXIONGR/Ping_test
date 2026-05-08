@@ -11,7 +11,7 @@ async function addIp(req, res) {
     const result = await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO ip_list (ip, number, status, position_x, position_y, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [ip, number, 0, 0, 40, 150, 150],
+        [ip, number, 0, 0, 40, 67, 50],
         function (err) {
           if (err) {
             console.error(`插入 IP ${ip} 失败:`, err);
